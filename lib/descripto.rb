@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
+require_relative "descripto/engine"
 require_relative "descripto/version"
 require_relative "descripto/associated"
 
 module Descripto
-  class Error < StandardError; end
-
-  class Engine < ::Rails::Engine
-    isolate_namespace Descripto
-  end
-
-  # Your code goes here...
+  mattr_accessor :model_parent_class, default: "ApplicationRecord"
+  mattr_accessor :descriptions_table_name, default: "descriptions"
+  mattr_accessor :descriptives_table_name, default: "descriptives"
 end
