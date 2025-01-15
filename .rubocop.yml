@@ -4,7 +4,7 @@ AllCops:
     - "test/**/*"
     - "Rakefile"
     - "descripto.gemspec"
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.3.4
 
 Style/Documentation:
   Enabled: false
