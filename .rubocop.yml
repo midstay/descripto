@@ -1,13 +1,17 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  Exclude:
+    - "bin/**/*"
+    - "test/**/*"
+    - "**/vendor/**/*"
+    - "Rakefile"
+    - "descripto.gemspec"
+  TargetRubyVersion: 3.3.4
 
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
+Style/Documentation:
+  Enabled: false
 
-Style/StringLiteralsInInterpolation:
-  Enabled: true
-  EnforcedStyle: double_quotes
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
 Layout/LineLength:
   Max: 120
