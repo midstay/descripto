@@ -18,8 +18,8 @@
 #  fk_rails_...  (description_id => descriptions.id)
 #
 module Descripto
-  class Descriptive < ActiveRecord::Base
-    self.table_name = 'descriptives'
+  class Descriptive < Descripto.model_parent_class.constantize
+    self.table_name = Descripto.descriptives_table_name
 
     belongs_to :description
     belongs_to :describable, polymorphic: true, touch: true
