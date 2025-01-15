@@ -1,7 +1,7 @@
-require "rails/engine"
+require 'rails/engine'
 
 module Descripto
   class Engine < Rails::Engine
-    engine_name "descripto"
+    engine_name 'descripto'
   end
 end

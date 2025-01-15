@@ -1,5 +1,5 @@
-require_relative "customized"
-require_relative "limited"
+require_relative 'customized'
+require_relative 'limited'
 
 module Descripto
   module Associated
@@ -9,10 +9,18 @@ module Descripto
     include Customized
 
     included do
-      has_many :descriptives, as: :describable, dependent: :destroy, class_name: "Descripto::Descriptive"
-      has_many :descriptions, through: :descriptives, class_name: "Descripto::Description"
+      has_many :descriptives,
+               as: :describable,
+               dependent: :destroy,
+               class_name: 'Descripto::Descriptive'
+      has_many :descriptions,
+               through: :descriptives,
+               class_name: 'Descripto::Description'
 
-      has_one :descriptive, as: :describable, dependent: :destroy, class_name: "Descripto::Descriptive"
+      has_one :descriptive,
+              as: :describable,
+              dependent: :destroy,
+              class_name: 'Descripto::Descriptive'
     end
 
     module ClassMethods
@@ -24,7 +32,7 @@ module Descripto
       end
 
       def description_types
-        types_module = const_get("Description::Types")
+        types_module = const_get('Description::Types')
         types_module.all.map do |type|
           one_description?(type) ? type : type.pluralize
         end
@@ -47,7 +55,7 @@ module Descripto
           -> { where(description_type: type.singularize) },
           through: :descriptive,
           source: :description,
-          class_name: "Descripto::Description"
+          class_name: 'Descripto::Description'
       end
 
       def define_has_many_descriptions_for(type)
@@ -56,7 +64,7 @@ module Descripto
           -> { where(description_type: type.singularize) },
           through: :descriptives,
           source: :description,
-          class_name: "Descripto::Description"
+          class_name: 'Descripto::Description'
       end
 
       private
