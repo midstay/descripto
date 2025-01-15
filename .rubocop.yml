@@ -2,6 +2,7 @@ AllCops:
   Exclude:
     - "bin/**/*"
     - "test/**/*"
+    - "**/vendor/**/*"
     - "Rakefile"
     - "descripto.gemspec"
   TargetRubyVersion: 3.3.4
