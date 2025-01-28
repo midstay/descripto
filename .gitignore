@@ -6,3 +6,19 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+# Dummy app
+# Ignore bundler config.
+test/dummy/.bundle
+test/dummy/.yardoc
+
+# Ignore all logfiles and tempfiles.
+test/dummy/log/*
+test/dummy/tmp/*
+
+# Ignore pidfiles, but keep the directory.
+/test/dummy/tmp/pids/*
+
+# Ignore uploaded files in development.
+test/dummy/storage/*
+test/dummy/tmp/storage/*
