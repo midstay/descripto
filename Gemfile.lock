@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     descripto (0.1.0)
-      activesupport (~> 7.0)
       rails (~> 7.0)
 
 GEM
