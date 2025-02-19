@@ -8,3 +8,9 @@ require "descripto"
 
 require "minitest/autorun"
 require "rails/test_help"
+
+class ActiveSupport::TestCase
+  self.fixture_paths = [Rails.root.join("test/dummy/test/fixtures")]
+
+  fixtures :all
+end
