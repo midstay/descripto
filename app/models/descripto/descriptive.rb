@@ -19,8 +19,6 @@
 #
 module Descripto
   class Descriptive < ActiveRecord::Base
-    self.table_name = 'descriptives'
-
     belongs_to :description
     belongs_to :describable, polymorphic: true, touch: true
 

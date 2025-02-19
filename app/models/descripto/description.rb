@@ -12,8 +12,6 @@
 #
 module Descripto
   class Description < ActiveRecord::Base
-    self.table_name = 'descriptions'
-
     has_many :descriptives, dependent: :destroy
 
     validates :name, uniqueness: { scope: %i[category description_type] }

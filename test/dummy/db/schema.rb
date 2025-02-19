@@ -10,5 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 0) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_18_063216) do
+  create_table "descripto_descriptions", force: :cascade do |t|
+    t.string "name"
+    t.string "name_key"
+    t.string "description_type"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "descripto_descriptives", force: :cascade do |t|
+    t.integer "descripto_description_id", null: false
+    t.bigint "describable_id"
+    t.string "describable_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["descripto_description_id"], name: "index_descripto_descriptives_on_descripto_description_id"
+  end
+
+  add_foreign_key "descripto_descriptives", "descripto_descriptions"
 end
