@@ -18,6 +18,12 @@ test/dummy/.yardoc
 test/dummy/log/*
 test/dummy/tmp/*
 
+# Ignore vendor
+test/dummy/vendor/*
+test/dummy/storage/*
+test/dummy/public/*
+
+
 # Ignore pidfiles, but keep the directory.
 /test/dummy/tmp/pids/*
 
