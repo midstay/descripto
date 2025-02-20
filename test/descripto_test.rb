@@ -2,8 +2,8 @@
 
 require "test_helper"
 
-class TestDescripto < Minitest::Test
-  def test_that_it_has_a_version_number
+class TestDescripto < ActiveSupport::TestCase
+  def test_it_has_a_version_number
     refute_nil ::Descripto::VERSION
   end
 end

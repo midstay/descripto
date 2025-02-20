@@ -2,3 +2,11 @@ football:
   name: 'Football'
   name_key: 'football'
   description_type: 'interest'
+programming:
+  name: 'Programming'
+  name_key: 'programming'
+  description_type: 'interest'
+norwegian:
+  name: 'Norwegian'
+  name_key: 'norwegian'
+  description_type: 'nationality'
