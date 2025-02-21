@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "descripto/version"
 require_relative "descripto/associated"
+require_relative "descripto/version"
+
+require "action_controller/railtie"
+require "rails/engine"
 
 module Descripto
   class Error < StandardError; end
 
-  class Engine < ::Rails::Engine
+  class Engine < Rails::Engine
     isolate_namespace Descripto
   end
 

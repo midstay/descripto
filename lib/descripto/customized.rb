@@ -1,3 +1,5 @@
+require "active_support/concern"
+
 module Descripto
   module Customized
     extend ActiveSupport::Concern
