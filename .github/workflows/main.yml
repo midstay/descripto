@@ -11,6 +11,7 @@ jobs:
     name: Build and Test
     env:
       CI: true
+      RAILS_ENV: test
 
     steps:
     - uses: actions/checkout@v3
