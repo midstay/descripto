@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    descripto (0.1.0)
+    descripto (0.2.0)
       rails (~> 7.0)
 
 GEM
@@ -83,7 +83,6 @@ GEM
     benchmark (0.4.0)
     bigdecimal (3.1.9)
     builder (3.3.0)
-    byebug (11.1.3)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.0)
     crass (1.0.6)
@@ -213,7 +212,6 @@ PLATFORMS
   x86_64-darwin-21
 
 DEPENDENCIES
-  byebug
   descripto!
   minitest (~> 5.0)
   rake (~> 13.0)
