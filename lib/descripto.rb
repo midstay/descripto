@@ -3,8 +3,6 @@
 require_relative "descripto/associated"
 require_relative "descripto/version"
 
-require_relative "descripto/generators/install_generator"
-
 require "action_controller/railtie"
 require "rails/engine"
 
