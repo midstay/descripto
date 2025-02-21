@@ -22,7 +22,4 @@ end
 desc "Run all tests (gem + dummy app)"
 task test: %i[test_gem test_dummy]
 
-require "rubocop/rake_task"
-RuboCop::RakeTask.new
-
 task default: %i[test]
