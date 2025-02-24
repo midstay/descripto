@@ -12,7 +12,7 @@
 #
 module Descripto
   class Description < ActiveRecord::Base
-    has_many :descriptives, dependent: :destroy, foreign_key: :descripto_description_id
+    has_many :descriptives, dependent: :destroy
 
     validates :name, uniqueness: { scope: %i[category description_type] }
   end
