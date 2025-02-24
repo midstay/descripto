@@ -10,7 +10,7 @@ class CreateDescriptoTables < ActiveRecord::Migration[7.0]
     end
 
     create_table :descripto_descriptives do |t|
-      t.references :descripto_description, null: false, foreign_key: true
+      t.references :description, null: false, foreign_key: { to_table: :descripto_descriptions }
       t.bigint :describable_id
       t.string :describable_type
 
