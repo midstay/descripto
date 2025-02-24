@@ -8,7 +8,7 @@ class PersonTest < ActiveSupport::TestCase
   def test_adds_description_with_concern_inclusion
     assert Person.included_modules.include?(Descripto::Associated)
 
-    assert Person::Description::Types.all.include?("interest")
+    assert Person.descripto_descriptions[:types].include?(:interests)
 
     assert @person.respond_to?(:interests)
   end

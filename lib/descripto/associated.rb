@@ -1,11 +1,9 @@
 require_relative "customized"
-require_relative "limited"
 
 module Descripto
   module Associated
     extend ActiveSupport::Concern
 
-    include Limited
     include Customized
 
     included do
@@ -16,22 +14,24 @@ module Descripto
     end
 
     module ClassMethods
-      def define_description_relations
-        description_types.each do |type|
+      def described_by(*types, options)
+        define_descripto_getter(types, options)
+
+        types.map(&:to_s).each do |type|
           define_description_associations_for(type)
           define_class_getters_for(type)
+          define_validations_for(type, options[:limits])
         end
       end
 
-      def description_types
-        types_module = const_get("Description::Types")
-        types_module.all.map do |type|
-          one_description?(type) ? type : type.pluralize
+      def define_descripto_getter(types, options)
+        define_singleton_method(:descripto_descriptions) do
+          { types:, options: }
         end
       end
 
       def define_description_associations_for(type)
-        if one_description?(type)
+        if has_one_association?(type)
           define_has_one_description_for(type)
           define_description_getters_for(type)
           define_description_setters_for(type)
@@ -61,8 +61,8 @@ module Descripto
 
       private
 
-      def one_description?(type)
-        description_limit_for(type.singularize).eql?(1)
+      def has_one_association?(type) # rubocop:disable Naming/PredicateName
+        type.singularize.eql?(type)
       end
     end
   end

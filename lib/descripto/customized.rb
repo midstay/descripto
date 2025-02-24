@@ -49,6 +49,17 @@ module Descripto
           send("#{type}=", Description.find(ids_array))
         end
       end
+
+      def define_validations_for(type, limits)
+        return if has_one_association?(type)
+
+        return unless limits[type.to_sym]
+
+        validates type, length: {
+          too_short: "must have at least %{count} #{type}(s)",
+          too_long: "must have at most %{count} #{type}(s)"
+        }.merge(limits[type.to_sym])
+      end
     end
 
     # Loads the description that was set in the custom setter
