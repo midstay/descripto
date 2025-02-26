@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    descripto (0.3.0)
+    descripto (0.3.1)
       rails (~> 7.0)
 
 GEM
