@@ -68,7 +68,9 @@ module Descripto
       end
 
       def description_type(type, options)
-        options[:scoped] ? "#{self.name.parameterize.underscore}_#{type.to_s.singularize}" : type.to_s.singularize
+        return type.to_s.singularize unless options&.dig(:scoped)
+
+        "#{self.name.parameterize.underscore}_#{type.to_s.singularize}"
       end
     end
   end
