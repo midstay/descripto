@@ -5,21 +5,21 @@ module Descripto
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def define_class_getters_for(type)
+      def define_class_getters_for(type, scoped_type)
         define_singleton_method(type.to_s.pluralize) do
-          Description.where(description_type: type.to_s.singularize)
+          Description.where(description_type: scoped_type)
         end
 
         Description.define_singleton_method(type.to_s.pluralize) do
-          Description.where(description_type: type.to_s.singularize)
+          Description.where(description_type: scoped_type)
         end
       end
 
-      def define_description_getters_for(type)
+      def define_description_getters_for(type, scoped_type)
         # Super cannot be called directly inside a method definition
         super_getter = instance_method(type.to_sym)
         define_method(type) do
-          super_getter.bind_call(self).presence || cached_description_for(type)
+          super_getter.bind_call(self).presence || cached_description_for(type, scoped_type)
         end
 
         define_method("#{type}_id") do
@@ -50,20 +50,20 @@ module Descripto
         end
       end
 
-      def define_validations_for(type, limits)
+      def define_validations_for(type, options)
         return if has_one_association?(type)
 
-        return unless limits[type.to_sym]
+        return unless options[:limits]
 
         validates type, length: {
           too_short: "must have at least %{count} #{type}(s)",
           too_long: "must have at most %{count} #{type}(s)"
-        }.merge(limits[type.to_sym])
+        }.merge(options[:limits])
       end
     end
 
     # Loads the description that was set in the custom setter
-    def cached_description_for(type)
+    def cached_description_for(type, scoped_type)
       Description.where(description_type: type, id: descriptions.map(&:id)).first
     end
 

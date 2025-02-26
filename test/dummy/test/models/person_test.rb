@@ -65,4 +65,18 @@ class PersonTest < ActiveSupport::TestCase
     @person.save
     assert @person.reload.nationality = nationality
   end
+
+  def test_should_scope_description_type_if_scoped
+    interest_options = Person.descripto_descriptions[:options][:interests]
+    assert interest_options[:scoped].blank?
+
+    interests_description_type = Person.first.interests.first.description_type
+    assert interests_description_type.exclude?("person")
+
+    nationality_options = Person.descripto_descriptions[:options][:nationality]
+    assert nationality_options[:scoped].eql?(true)
+
+    nationality_description_type = Person.first.nationality.description_type
+    assert nationality_description_type.include?("person")
+  end
 end

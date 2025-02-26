@@ -9,4 +9,4 @@ programming:
 norwegian:
   name: 'Norwegian'
   name_key: 'norwegian'
-  description_type: 'nationality'
+  description_type: 'person_nationality'
