@@ -14,13 +14,13 @@ module Descripto
     end
 
     module ClassMethods
-      def described_by(*types, options)
+      def described_by(*types, options: {})
         define_descripto_getter(types, options)
 
         types.map(&:to_s).each do |type|
           define_description_associations_for(type)
           define_class_getters_for(type)
-          define_validations_for(type, options[:limits])
+          define_validations_for(type, options[:limits]) if options.present?
         end
       end
 
