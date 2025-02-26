@@ -3,5 +3,7 @@
 class Person < ApplicationRecord
   include Descripto::Associated
 
-  described_by :nationality, :interests, limits: { interests: { maximum: 5 } }
+  described_by :nationality, :interests,
+               interests: { limits: { maximum: 5 } },
+               nationality: { scoped: true }
 end

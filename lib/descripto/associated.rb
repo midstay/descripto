@@ -18,9 +18,11 @@ module Descripto
         define_descripto_getter(types, options)
 
         types.map(&:to_s).each do |type|
-          define_description_associations_for(type)
-          define_class_getters_for(type)
-          define_validations_for(type, options[:limits])
+          scoped_type = description_type(type, options[type.to_sym])
+
+          define_description_associations_for(type, scoped_type)
+          define_class_getters_for(type, scoped_type)
+          define_validations_for(type, options[type.to_sym])
         end
       end
 
@@ -30,30 +32,30 @@ module Descripto
         end
       end
 
-      def define_description_associations_for(type)
+      def define_description_associations_for(type, scoped_type)
         if has_one_association?(type)
-          define_has_one_description_for(type)
-          define_description_getters_for(type)
+          define_has_one_description_for(type, scoped_type)
+          define_description_getters_for(type, scoped_type)
           define_description_setters_for(type)
         else
-          define_has_many_descriptions_for(type)
+          define_has_many_descriptions_for(type, scoped_type)
           define_description_ids_setter_for(type)
         end
       end
 
-      def define_has_one_description_for(type)
+      def define_has_one_description_for(type, scoped_type)
         has_one \
           type.to_sym,
-          -> { where(description_type: type.singularize) },
+          -> { where(description_type: scoped_type) },
           through: :descriptive,
           source: :description,
           class_name: "Descripto::Description"
       end
 
-      def define_has_many_descriptions_for(type)
+      def define_has_many_descriptions_for(type, scoped_type)
         has_many \
           type.to_sym,
-          -> { where(description_type: type.singularize) },
+          -> { where(description_type: scoped_type) },
           through: :descriptives,
           source: :description,
           class_name: "Descripto::Description"
@@ -63,6 +65,10 @@ module Descripto
 
       def has_one_association?(type) # rubocop:disable Naming/PredicateName
         type.singularize.eql?(type)
+      end
+
+      def description_type(type, options)
+        options[:scoped] ? "#{self.name.parameterize.underscore}_#{type.to_s.singularize}" : type.to_s.singularize
       end
     end
   end
