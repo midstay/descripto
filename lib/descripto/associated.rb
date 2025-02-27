@@ -32,7 +32,7 @@ module Descripto
         end
 
         define_singleton_method(:description_type_for) do |association_name|
-          description_type(association_name)
+          description_type(association_name.to_sym)
         end
       end
 
