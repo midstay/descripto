@@ -37,25 +37,25 @@ module Descripto
         return unless options[:allow_custom]
 
         define_method("custom_#{type}=") do |strings|
-          descriptions = descriptions_from_strings(type, strings, unique: false)
-          send("#{type}=", descriptions)
+          descriptions = descriptions_from_strings(type, strings, options, unique: false)
+          send("#{type}=", descriptions) if descriptions.present?
         end
 
         define_method("custom_#{type}<<") do |strings|
-          descriptions = descriptions_from_strings(type, strings, unique: false)
-          send("#{type}<<", descriptions)
+          descriptions = descriptions_from_strings(type, strings, options, unique: false)
+          send("#{type}<<", descriptions) if descriptions.present?
         end
 
         return unless options[:allow_unique]
 
         define_method("unique_#{type}=") do |strings|
-          descriptions = descriptions_from_strings(type, strings, unique: true)
-          send("#{type}=", descriptions)
+          descriptions = descriptions_from_strings(type, strings, options, unique: true)
+          send("#{type}=", descriptions) if descriptions.present?
         end
 
         define_method("unique_#{type}<<") do |strings|
-          descriptions = descriptions_from_strings(type, strings, unique: true)
-          send("#{type}<<", descriptions)
+          descriptions = descriptions_from_strings(type, strings, options, unique: true)
+          send("#{type}<<", descriptions) if descriptions.present?
         end
       end
 
@@ -79,12 +79,12 @@ module Descripto
       def define_validations_for(type, options)
         return if has_one_association?(type)
 
-        return unless options[:limits]
-
-        validates type, length: {
-          too_short: "must have at least %{count} #{type}(s)",
-          too_long: "must have at most %{count} #{type}(s)"
-        }.merge(options[:limits])
+        if options.dig(:limits, :maximum)
+          validates type, length: {
+            too_short: "must have at least %{count} #{type}(s)",
+            too_long: "must have at most %{count} #{type}(s)"
+          }.merge(options[:limits].slice(:maximum))
+        end
 
         define_uniqueness_validation_for(type, options)
 
@@ -97,7 +97,16 @@ module Descripto
       Description.where(description_type: type, id: descriptions.map(&:id)).first
     end
 
-    def descriptions_from_strings(type, strings, unique: false)
+    def descriptions_from_strings(type, strings, options, unique: false)
+      over_limit = strings.find do |string|
+        string.length > options[:limits][:max_chars]
+      end
+
+      if over_limit
+        errors.add(type, "has a maximum character length of #{options[:limits][:max_chars]}")
+        return
+      end
+
       strings.map do |string|
         Description.create(description_type: type.singularize, name: string, name_key: string.underscore, unique:)
       end

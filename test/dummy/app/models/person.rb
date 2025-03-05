@@ -7,6 +7,6 @@ class Person < ApplicationRecord
                options: {
                  interests: { limits: { maximum: 5 } },
                  nationality: { scoped: true },
-                 objectives: { allow_custom: true, allow_unique: true }
+                 objectives: { allow_custom: true, allow_unique: true, limits: { max_chars: 20 } }
                }
 end

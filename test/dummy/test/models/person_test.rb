@@ -169,4 +169,9 @@ class PersonTest < ActiveSupport::TestCase
 
     assert @person.objectives.first.unique
   end
+
+  test "should validate character length of custom descriptions" do
+    @person.custom_objectives = ["Learning anything up in here is cool"]
+    assert_equal "Objectives has a maximum character length of 20", @person.errors.full_messages.first
+  end
 end
