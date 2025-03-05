@@ -20,7 +20,7 @@ module Descripto
         types.map(&:to_s).each do |type|
           scoped_type = description_type(type.to_sym)
 
-          define_description_associations_for(type, scoped_type)
+          define_description_associations_for(type, scoped_type, options[type.to_sym])
           define_class_getters_for(type, scoped_type)
           define_validations_for(type, options[type.to_sym]) if options.present?
         end
@@ -36,14 +36,15 @@ module Descripto
         end
       end
 
-      def define_description_associations_for(type, scoped_type)
+      def define_description_associations_for(type, scoped_type, options)
         if has_one_association?(type)
           define_has_one_description_for(type, scoped_type)
           define_description_getters_for(type, scoped_type)
-          define_description_setters_for(type)
+          define_has_one_description_setters_for(type)
         else
           define_has_many_descriptions_for(type, scoped_type)
           define_description_ids_setter_for(type)
+          define_has_many_description_setters_for(type, options)
         end
       end
 

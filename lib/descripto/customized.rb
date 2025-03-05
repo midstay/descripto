@@ -7,11 +7,11 @@ module Descripto
     module ClassMethods
       def define_class_getters_for(type, scoped_type)
         define_singleton_method(type.to_s.pluralize) do
-          Description.where(description_type: scoped_type)
+          Description.where(description_type: scoped_type, unique: false)
         end
 
         Description.define_singleton_method(type.to_s.pluralize) do
-          Description.where(description_type: scoped_type)
+          Description.where(description_type: scoped_type, unique: false)
         end
       end
 
@@ -27,19 +27,35 @@ module Descripto
         end
       end
 
-      # The has_one "type setter" must be overridden as the has_one "description" setter
-      # unsets them if there are multiple being set in the same transaction.
-      def define_description_setters_for(type)
-        define_method("#{type}=") do |description|
-          descriptive = descriptive_of_type(type)
-          return if description_exists?(description, descriptive)
-
-          descriptive&.destroy
-          descriptions << description if description.present?
-        end
-
+      def define_has_one_description_setters_for(type)
         define_method("#{type}_id=") do |id|
           send("#{type}=", Description.find_by(id:))
+        end
+      end
+
+      def define_has_many_description_setters_for(type, options)
+        return unless options[:allow_custom]
+
+        define_method("custom_#{type}=") do |strings|
+          descriptions = descriptions_from_strings(type, strings, unique: false)
+          send("#{type}=", descriptions)
+        end
+
+        define_method("custom_#{type}<<") do |strings|
+          descriptions = descriptions_from_strings(type, strings, unique: false)
+          send("#{type}<<", descriptions)
+        end
+
+        return unless options[:allow_unique]
+
+        define_method("unique_#{type}=") do |strings|
+          descriptions = descriptions_from_strings(type, strings, unique: true)
+          send("#{type}=", descriptions)
+        end
+
+        define_method("unique_#{type}<<") do |strings|
+          descriptions = descriptions_from_strings(type, strings, unique: true)
+          send("#{type}<<", descriptions)
         end
       end
 
@@ -47,6 +63,16 @@ module Descripto
         define_method("#{type.singularize}_ids=") do |ids|
           ids_array = [ids].flatten.compact_blank.map(&:to_i)
           send("#{type}=", Description.find(ids_array))
+        end
+      end
+
+      def define_uniqueness_validation_for(type, options)
+        define_method("#{type}_uniqueness") do |allow_custom|
+          return if allow_custom
+
+          if send(type).find(&:unique?)
+            errors.add(type, "are not allowed to be unique")
+          end
         end
       end
 
@@ -59,12 +85,22 @@ module Descripto
           too_short: "must have at least %{count} #{type}(s)",
           too_long: "must have at most %{count} #{type}(s)"
         }.merge(options[:limits])
+
+        define_uniqueness_validation_for(type, options)
+
+        validate -> { send("#{type}_uniqueness", options[:allow_custom]) }
       end
     end
 
     # Loads the description that was set in the custom setter
     def cached_description_for(type, scoped_type)
       Description.where(description_type: type, id: descriptions.map(&:id)).first
+    end
+
+    def descriptions_from_strings(type, strings, unique: false)
+      strings.map do |string|
+        Description.create(description_type: type.singularize, name: string, name_key: string.underscore, unique:)
+      end
     end
 
     def descriptive_of_type(type)

@@ -1,9 +1,10 @@
 class CreateDescriptoTables < ActiveRecord::Migration[7.0]
-  def change
+  def change # rubocop:disable Metrics/MethodLength
     create_table :descripto_descriptions do |t|
       t.string :name
       t.string :name_key
       t.string :description_type
+      t.boolean :unique, default: false
       t.string :category
 
       t.timestamps

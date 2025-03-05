@@ -15,6 +15,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_19_063638) do
     t.string "name"
     t.string "name_key"
     t.string "description_type"
+    t.boolean "unique", default: false
     t.string "category"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
