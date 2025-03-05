@@ -4,7 +4,6 @@ class CreateDescriptoTables < ActiveRecord::Migration[7.0]
       t.string :name
       t.string :name_key
       t.string :description_type
-      t.boolean :unique, default: false
       t.string :category
 
       t.timestamps

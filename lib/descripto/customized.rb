@@ -7,11 +7,11 @@ module Descripto
     module ClassMethods
       def define_class_getters_for(type, scoped_type)
         define_singleton_method(type.to_s.pluralize) do
-          Description.where(description_type: scoped_type, unique: false)
+          Description.where(description_type: scoped_type)
         end
 
         Description.define_singleton_method(type.to_s.pluralize) do
-          Description.where(description_type: scoped_type, unique: false)
+          Description.where(description_type: scoped_type)
         end
       end
 
@@ -37,24 +37,12 @@ module Descripto
         return unless options[:allow_custom]
 
         define_method("custom_#{type}=") do |strings|
-          descriptions = descriptions_from_strings(type, strings, options, unique: false)
+          descriptions = descriptions_from_strings(type, strings, options)
           send("#{type}=", descriptions) if descriptions.present?
         end
 
         define_method("custom_#{type}<<") do |strings|
-          descriptions = descriptions_from_strings(type, strings, options, unique: false)
-          send("#{type}<<", descriptions) if descriptions.present?
-        end
-
-        return unless options[:allow_unique]
-
-        define_method("unique_#{type}=") do |strings|
-          descriptions = descriptions_from_strings(type, strings, options, unique: true)
-          send("#{type}=", descriptions) if descriptions.present?
-        end
-
-        define_method("unique_#{type}<<") do |strings|
-          descriptions = descriptions_from_strings(type, strings, options, unique: true)
+          descriptions = descriptions_from_strings(type, strings, options)
           send("#{type}<<", descriptions) if descriptions.present?
         end
       end
@@ -66,29 +54,16 @@ module Descripto
         end
       end
 
-      def define_uniqueness_validation_for(type, options)
-        define_method("#{type}_uniqueness") do |allow_custom|
-          return if allow_custom
-
-          if send(type).find(&:unique?)
-            errors.add(type, "are not allowed to be unique")
-          end
-        end
-      end
-
       def define_validations_for(type, options)
         return if has_one_association?(type)
 
-        if options.dig(:limits, :maximum)
+        if options[:max_items]
           validates type, length: {
+            maximum: options[:max_items],
             too_short: "must have at least %{count} #{type}(s)",
             too_long: "must have at most %{count} #{type}(s)"
-          }.merge(options[:limits].slice(:maximum))
+          }
         end
-
-        define_uniqueness_validation_for(type, options)
-
-        validate -> { send("#{type}_uniqueness", options[:allow_custom]) }
       end
     end
 
@@ -97,18 +72,18 @@ module Descripto
       Description.where(description_type: type, id: descriptions.map(&:id)).first
     end
 
-    def descriptions_from_strings(type, strings, options, unique: false)
+    def descriptions_from_strings(type, strings, options)
       over_limit = strings.find do |string|
-        string.length > options[:limits][:max_chars]
+        string.length > options[:max_chars]
       end
 
       if over_limit
-        errors.add(type, "has a maximum character length of #{options[:limits][:max_chars]}")
+        errors.add(type, "has a maximum character length of #{options[:max_chars]}")
         return
       end
 
       strings.map do |string|
-        Description.create(description_type: type.singularize, name: string, name_key: string.underscore, unique:)
+        Description.create(description_type: type.singularize, name: string, name_key: string.underscore)
       end
     end
 

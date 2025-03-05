@@ -23,10 +23,5 @@ module Descripto
     belongs_to :describable, polymorphic: true, touch: true
 
     validates :description, uniqueness: { scope: %i[describable_type describable_id] }
-    validates :description_id, uniqueness: {
-      scope: [],
-      if: -> { description&.unique? },
-      message: "can only be used once as it is marked as unique"
-    }
   end
 end
