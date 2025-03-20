@@ -5,7 +5,7 @@ class Person < ApplicationRecord
 
   described_by :nationality, :interests,
                options: {
-                 interests: { limits: { maximum: 5 } },
+                 interests: { limits: { maximum: 2 }, max_character: 50 },
                  nationality: { scoped: true }
                }
 end
