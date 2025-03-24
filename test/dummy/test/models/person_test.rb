@@ -5,6 +5,43 @@ class PersonTest < ActiveSupport::TestCase
     @person = people(:jan_tore)
   end
 
+  def test_cannot_add_same_description_twice
+    football = descripto_descriptions(:football)
+
+    assert_raises ActiveRecord::RecordInvalid do
+      @person.interests << football
+    end
+
+    @person.interest_ids = [football.id, football.id]
+    assert_equal 1, @person.interests.size
+  end
+
+  def test_cannot_add_more_than_limit
+    football = descripto_descriptions(:football)
+    programming = descripto_descriptions(:programming)
+    surfing = descripto_descriptions(:surfing)
+
+    @person.interest_ids = [football.id, programming.id, surfing.id]
+    refute @person.valid?
+    assert @person.errors.key? :interests
+    assert_includes @person.errors[:interests], "must have at most 2 interest(s)"
+  end
+
+  def test_description_name_cannot_exceed_max_characters
+    long_name = "a" * 51
+    description = Descripto::Description.create(
+      name: long_name,
+      name_key: long_name.parameterize(separator: "_"),
+      description_type: "interest"
+    )
+
+    @person.assign_attributes(interest_ids: [description.id])
+
+    refute @person.valid?
+    assert @person.errors.key?(:interests)
+    assert_includes @person.errors[:interests], "name cannot exceed 50 characters"
+  end
+
   def test_adds_description_with_concern_inclusion
     assert Person.included_modules.include?(Descripto::Associated)
 
