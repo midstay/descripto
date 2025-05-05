@@ -18,7 +18,7 @@
 #  fk_rails_...  (description_id => descriptions.id)
 #
 module Descripto
-  class Descriptive < ActiveRecord::Base
+  class Descriptive < parent_model_class.constantize
     belongs_to :description, class_name: "Descripto::Description"
     belongs_to :describable, polymorphic: true, touch: true
 
