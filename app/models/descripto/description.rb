@@ -11,7 +11,7 @@
 #  updated_at       :datetime         not null
 #
 module Descripto
-  class Description < ActiveRecord::Base
+  class Description < parent_model_class.constantize
     has_many :descriptives, dependent: :destroy
 
     validates :name, uniqueness: { scope: %i[category description_type] }

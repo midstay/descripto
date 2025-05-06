@@ -7,6 +7,8 @@ require "action_controller/railtie"
 require "rails/engine"
 
 module Descripto
+  mattr_accessor :parent_model_class, default: "ApplicationRecord"
+
   class Error < StandardError; end
 
   class Engine < Rails::Engine
