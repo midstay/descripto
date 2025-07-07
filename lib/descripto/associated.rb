@@ -21,7 +21,7 @@ module Descripto
           scoped_type = description_type(type.to_sym)
 
           define_description_associations_for(type, scoped_type)
-          define_class_getters_for(type, scoped_type)
+          define_class_getters_for(type, scoped_type, options[type.to_sym])
           define_validations_for(type, options[type.to_sym]) if options.present?
         end
       end
@@ -74,9 +74,13 @@ module Descripto
       def description_type(type)
         options = descripto_descriptions[:options][type]
 
-        return type.to_s.singularize unless options&.dig(:scoped)
+        return type.to_s.singularize unless scoped?(options)
 
         "#{self.name.parameterize.underscore}_#{type.to_s.singularize}"
+      end
+
+      def scoped?(options)
+        options&.dig(:scoped) || options&.dig(:polymorphic_scoped)
       end
     end
   end

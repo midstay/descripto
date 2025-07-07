@@ -5,13 +5,19 @@ module Descripto
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def define_class_getters_for(type, scoped_type)
+      def define_class_getters_for(type, scoped_type, options)
         define_singleton_method(type.to_s.pluralize) do
           Description.where(description_type: scoped_type)
         end
 
         Description.define_singleton_method(type.to_s.pluralize) do
           Description.where(description_type: scoped_type)
+        end
+
+        return unless options[:polymorphic_scoped]
+
+        define_singleton_method("#{type.to_s.pluralize}_for") do |describable|
+          Description.where(description_type: scoped_type, class_name: describable.class.name)
         end
       end
 
@@ -56,8 +62,8 @@ module Descripto
         return unless options[:limits]
 
         validates type, length: {
-          too_short: "must have at least %{count} #{type}(s)",
-          too_long: "must have at most %{count} #{type}(s)"
+          too_short: "must have at least %<count>s #{type}(s)",
+          too_long: "must have at most %<count>s #{type}(s)"
         }.merge(options[:limits])
       end
     end

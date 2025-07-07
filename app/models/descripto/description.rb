@@ -14,6 +14,6 @@ module Descripto
   class Description < parent_model_class.constantize
     has_many :descriptives, dependent: :destroy
 
-    validates :name, uniqueness: { scope: %i[category description_type] }
+    validates :name, uniqueness: { scope: %i[description_type category class_name] }
   end
 end
