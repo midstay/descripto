@@ -5,6 +5,7 @@ class CreateDescriptoTables < ActiveRecord::Migration[7.0]
       t.string :name_key
       t.string :description_type
       t.string :category
+      t.string :class_name
 
       t.timestamps
     end
