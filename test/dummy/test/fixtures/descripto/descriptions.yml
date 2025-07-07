@@ -10,3 +10,28 @@ norwegian:
   name: 'Norwegian'
   name_key: 'norwegian'
   description_type: 'person_nationality'
+
+# Polymorphic scoped job positions
+software_engineer:
+  name: 'Software Engineer'
+  name_key: 'software_engineer'
+  description_type: 'contact_job_position'
+  class_name: 'Person'
+
+project_manager:
+  name: 'Project Manager'
+  name_key: 'project_manager'
+  description_type: 'contact_job_position'
+  class_name: 'Company'
+
+sales_director:
+  name: 'Sales Director'
+  name_key: 'sales_director'
+  description_type: 'contact_job_position'
+  class_name: 'Company'
+
+consultant:
+  name: 'Consultant'
+  name_key: 'consultant'
+  description_type: 'contact_job_position'
+  class_name: 'Person'

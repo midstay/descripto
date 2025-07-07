@@ -1,6 +1,25 @@
+# Regular descriptives for people interests/nationality
 jan_tore_football:
   description: football
   describable: jan_tore (Person)
-jan_tore_norwegian:
+
+jan_tore_programming:
+  description: programming
+  describable: jan_tore (Person)
+
+jan_tore_nationality:
   description: norwegian
   describable: jan_tore (Person)
+
+# Polymorphic scoped descriptives for contact job positions
+john_software_engineer:
+  description: software_engineer
+  describable: john_person_contact (Contact)
+
+jane_project_manager:
+  description: project_manager
+  describable: jane_company_contact (Contact)
+
+mike_sales_director:
+  description: sales_director
+  describable: mike_tech_contact (Contact)

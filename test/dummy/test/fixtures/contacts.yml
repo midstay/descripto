@@ -1,0 +1,11 @@
+john_person_contact:
+  name: "John Doe"
+  contactable: jan_tore (Person)
+
+jane_company_contact:
+  name: "Jane Smith"
+  contactable: acme_corp (Company)
+
+mike_tech_contact:
+  name: "Mike Johnson"
+  contactable: tech_solutions (Company) 
