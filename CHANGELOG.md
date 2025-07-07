@@ -1,5 +1,11 @@
-## [Unreleased]
+# Changelog
 
-## [0.1.0] - 2025-01-10
+All notable changes to this project will be documented in this file.
 
-- Initial release
+## [0.7.0] - 2025-07-07
+### Added
+- Support for polymorphic associations (`describes polymorphic: true`)
+
+### Internal
+- First tracked version in changelog
+
