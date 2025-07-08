@@ -14,18 +14,18 @@ module Descripto
           Description.where(description_type: scoped_type)
         end
 
-        return unless options[:polymorphic_scoped]
+        return unless options&.dig(:polymorphic_scoped)
 
         define_singleton_method("#{type.to_s.pluralize}_for") do |describable|
           Description.where(description_type: scoped_type, class_name: describable.class.name)
         end
       end
 
-      def define_description_getters_for(type, scoped_type)
+      def define_description_getters_for(type)
         # Super cannot be called directly inside a method definition
         super_getter = instance_method(type.to_sym)
         define_method(type) do
-          super_getter.bind_call(self).presence || cached_description_for(type, scoped_type)
+          super_getter.bind_call(self).presence || cached_description_for(type)
         end
 
         define_method("#{type}_id") do
@@ -35,13 +35,20 @@ module Descripto
 
       # The has_one "type setter" must be overridden as the has_one "description" setter
       # unsets them if there are multiple being set in the same transaction.
-      def define_description_setters_for(type)
+      def define_description_setters_for(type) # rubocop:disable Metrics/MethodLength
         define_method("#{type}=") do |description|
-          descriptive = descriptive_of_type(type)
-          return if description_exists?(description, descriptive)
+          current_description = send(type)
+          return if current_description == description
 
-          descriptive&.destroy
-          descriptions << description if description.present?
+          # Remove existing association for this type
+          descriptives.where(description: current_description).destroy_all if current_description
+
+          # Create new association if description present
+          descriptives.create!(description: description) if description.present?
+
+          # Reset caches so validations see correct state
+          association(type.to_sym).reset
+          association(:descriptives).reset
         end
 
         define_method("#{type}_id=") do |id|
@@ -55,30 +62,11 @@ module Descripto
           send("#{type}=", Description.find(ids_array))
         end
       end
-
-      def define_validations_for(type, options)
-        return if has_one_association?(type)
-
-        return unless options[:limits]
-
-        validates type, length: {
-          too_short: "must have at least %<count>s #{type}(s)",
-          too_long: "must have at most %<count>s #{type}(s)"
-        }.merge(options[:limits])
-      end
     end
 
     # Loads the description that was set in the custom setter
-    def cached_description_for(type, scoped_type)
+    def cached_description_for(type)
       Description.where(description_type: type, id: descriptions.map(&:id)).first
-    end
-
-    def descriptive_of_type(type)
-      descriptives.find { |d| d.description_id.eql?(send(type)&.id) }
-    end
-
-    def description_exists?(description, descriptive)
-      descriptive&.description_id.eql?(description.presence&.id)
     end
   end
 end

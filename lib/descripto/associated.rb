@@ -1,10 +1,12 @@
 require_relative "customized"
+require_relative "validatable"
 
 module Descripto
   module Associated
     extend ActiveSupport::Concern
 
     include Customized
+    include Validatable
 
     included do
       has_many :descriptives, as: :describable, dependent: :destroy, class_name: "Descripto::Descriptive"
@@ -39,7 +41,7 @@ module Descripto
       def define_description_associations_for(type, scoped_type)
         if has_one_association?(type)
           define_has_one_description_for(type, scoped_type)
-          define_description_getters_for(type, scoped_type)
+          define_description_getters_for(type)
           define_description_setters_for(type)
         else
           define_has_many_descriptions_for(type, scoped_type)
@@ -67,7 +69,7 @@ module Descripto
 
       private
 
-      def has_one_association?(type) # rubocop:disable Naming/PredicateName
+      def has_one_association?(type)
         type.singularize.eql?(type)
       end
 
@@ -76,7 +78,7 @@ module Descripto
 
         return type.to_s.singularize unless scoped?(options)
 
-        "#{self.name.parameterize.underscore}_#{type.to_s.singularize}"
+        "#{name.parameterize.underscore}_#{type.to_s.singularize}"
       end
 
       def scoped?(options)

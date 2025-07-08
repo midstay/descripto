@@ -95,4 +95,76 @@ class ContactTest < ActiveSupport::TestCase
     assert_equal position, reloaded_contact.job_position
     assert_equal "Person", reloaded_contact.job_position.class_name
   end
+
+  # Tests for the Validatable concern
+  def test_contact_validates_job_position_class_name
+    # Create a contact for a person
+    contact = Contact.create!(name: "Test Contact", contactable: @person)
+
+    # Create a job position with invalid class name
+    invalid_position = Descripto::Description.create!(
+      name: "Invalid Position",
+      name_key: "invalid_position",
+      description_type: "contact_job_position",
+      class_name: "InvalidClass"
+    )
+
+    # Try to assign the invalid position
+    contact.job_position = invalid_position
+
+    # The contact should not be valid and save should fail
+    refute contact.save
+    assert contact.errors[:job_position].present?
+    assert_includes contact.errors[:job_position].first, "contains descriptions with invalid class names: InvalidClass"
+    assert_includes contact.errors[:job_position].first, "Allowed classes: Person, Company"
+  end
+
+  def test_contact_allows_valid_job_position_class_names
+    # Create a contact for a person
+    contact = Contact.create!(name: "Test Contact", contactable: @person)
+
+    # Create a job position with valid class name
+    valid_position = Descripto::Description.create!(
+      name: "Valid Position",
+      name_key: "valid_position",
+      description_type: "contact_job_position",
+      class_name: "Person"
+    )
+
+    # Assign the valid position
+    contact.job_position = valid_position
+
+    # The contact should be valid
+    assert contact.valid?
+    assert contact.errors[:job_position].empty?
+  end
+
+  def test_contact_validation_works_with_company_class_name
+    # Create a contact for a company
+    contact = Contact.create!(name: "Test Contact", contactable: @company)
+
+    # Create a job position with valid Company class name
+    valid_position = Descripto::Description.create!(
+      name: "Valid Company Position",
+      name_key: "valid_company_position",
+      description_type: "contact_job_position",
+      class_name: "Company"
+    )
+
+    # Assign the valid position
+    contact.job_position = valid_position
+
+    # The contact should be valid
+    assert contact.valid?
+    assert contact.errors[:job_position].empty?
+  end
+
+  def test_contact_validation_passes_when_no_job_position_assigned
+    # Create a contact without a job position
+    contact = Contact.create!(name: "Test Contact", contactable: @person)
+
+    # The contact should be valid even without a job position
+    assert contact.valid?
+    assert contact.errors[:job_position].empty?
+  end
 end

@@ -35,3 +35,23 @@ consultant:
   name_key: 'consultant'
   description_type: 'contact_job_position'
   class_name: 'Person'
+
+male:
+  name: 'Male'
+  name_key: 'male'
+  description_type: 'gender'
+
+female:
+  name: 'Female'
+  name_key: 'female'
+  description_type: 'gender'
+
+other:
+  name: 'Other'
+  name_key: 'other'
+  description_type: 'gender'
+
+german:
+  name: 'German'
+  name_key: 'german'
+  description_type: 'nationality'

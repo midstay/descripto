@@ -79,4 +79,69 @@ class PersonTest < ActiveSupport::TestCase
     nationality_description_type = Person.first.nationality.description_type
     assert nationality_description_type.include?("person")
   end
+
+  # Tests for the Validatable concern length validation
+  def test_person_validates_interests_length_maximum
+    # Create more than 5 interests (maximum allowed)
+    6.times do |i|
+      @person.interests << Descripto::Description.create!(
+        name: "Interest #{i}",
+        name_key: "interest_#{i}",
+        description_type: "interest"
+      )
+    end
+
+    # The person should not be valid
+    refute @person.valid?
+    assert @person.errors[:interests].present?
+    assert_includes @person.errors[:interests].first, "must have at most 5 interests(s)"
+  end
+
+  def test_person_allows_valid_interests_length
+    # Clear existing interests and add exactly 5 (maximum allowed)
+    @person.interests.clear
+    5.times do |i|
+      @person.interests << Descripto::Description.create!(
+        name: "Interest #{i}",
+        name_key: "interest_#{i}",
+        description_type: "interest"
+      )
+    end
+
+    # The person should be valid
+    assert @person.valid?
+    assert @person.errors[:interests].empty?
+  end
+
+  def test_person_allows_fewer_interests_than_maximum
+    # Clear existing interests and add 3 (less than maximum)
+    @person.interests.clear
+    3.times do |i|
+      @person.interests << Descripto::Description.create!(
+        name: "Interest #{i}",
+        name_key: "interest_#{i}",
+        description_type: "interest"
+      )
+    end
+
+    # The person should be valid
+    assert @person.valid?
+    assert @person.errors[:interests].empty?
+  end
+
+  def test_person_allows_empty_interests
+    # Clear all interests
+    @person.interests.clear
+
+    # The person should still be valid (no minimum limit set)
+    assert @person.valid?
+    assert @person.errors[:interests].empty?
+  end
+
+  def test_nationality_has_no_length_validation
+    # Nationality is a has_one association, so it shouldn't have length validation
+    # Even though it doesn't make sense to test, we can verify it doesn't break
+    assert @person.nationality.present?
+    assert @person.valid?
+  end
 end

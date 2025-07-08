@@ -5,6 +5,9 @@ class Contact < ApplicationRecord
 
   described_by :job_position,
                options: {
-                 job_position: { polymorphic_scoped: true }
+                 job_position: {
+                   polymorphic_scoped: true,
+                   allowed_classes: [Person, Company]
+                 }
                }
 end
