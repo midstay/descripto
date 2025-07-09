@@ -7,7 +7,7 @@ class Contact < ApplicationRecord
                options: {
                  job_position: {
                    polymorphic_scoped: true,
-                   allowed_classes: [Person, Company]
+                   scoped_classes: [Person, Company]
                  }
                }
 end
