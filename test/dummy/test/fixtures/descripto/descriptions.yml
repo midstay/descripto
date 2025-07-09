@@ -36,6 +36,12 @@ consultant:
   description_type: 'contact_job_position'
   class_name: 'Person'
 
+other_job_position:
+  name: 'Other'
+  name_key: 'other'
+  description_type: 'contact_job_position'
+  class_name: 'Person'
+
 male:
   name: 'Male'
   name_key: 'male'

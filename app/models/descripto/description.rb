@@ -15,5 +15,9 @@ module Descripto
     has_many :descriptives, dependent: :destroy
 
     validates :name, uniqueness: { scope: %i[description_type category class_name] }
+
+    scope :order_with_last, lambda { |value|
+      order(Arel.sql("CASE WHEN name = '#{value}' THEN 1 ELSE 0 END"), :name)
+    }
   end
 end
