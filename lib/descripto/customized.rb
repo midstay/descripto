@@ -17,7 +17,7 @@ module Descripto
         return unless options&.dig(:polymorphic_scoped)
 
         define_singleton_method("#{type.to_s.pluralize}_for") do |describable|
-          Description.where(description_type: scoped_type, class_name: describable.class.name)
+          Description.where(description_type: scoped_type, class_name: describable.name)
         end
       end
 
