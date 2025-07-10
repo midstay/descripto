@@ -27,15 +27,20 @@ module Descripto
         end
       end
 
-      # The has_one "type setter" must be overridden as the has_one "description" setter
-      # unsets them if there are multiple being set in the same transaction.
-      def define_description_setters_for(type)
+      def define_description_setters_for(type) # rubocop:disable Metrics/MethodLength
         define_method("#{type}=") do |description|
-          descriptive = descriptive_of_type(type)
-          return if description_exists?(description, descriptive)
+          current_description = send(type)
+          return if current_description == description
 
-          descriptive&.destroy
-          descriptions << description if description.present?
+          # Remove existing association for this type
+          descriptives.where(description: current_description).destroy_all if current_description
+
+          # Create new association if description present
+          descriptives.create!(description: description) if description.present?
+
+          # Reset caches so validations see correct state
+          association(type.to_sym).reset
+          association(:descriptives).reset
         end
 
         define_method("#{type}_id=") do |id|
@@ -56,8 +61,8 @@ module Descripto
         return unless options[:limits]
 
         validates type, length: {
-          too_short: "must have at least %{count} #{type}(s)",
-          too_long: "must have at most %{count} #{type}(s)"
+          too_short: "must have at least %<count>s #{type}(s)",
+          too_long: "must have at most %<count>s #{type}(s)"
         }.merge(options[:limits])
       end
     end
@@ -65,14 +70,6 @@ module Descripto
     # Loads the description that was set in the custom setter
     def cached_description_for(type, scoped_type)
       Description.where(description_type: type, id: descriptions.map(&:id)).first
-    end
-
-    def descriptive_of_type(type)
-      descriptives.find { |d| d.description_id.eql?(send(type)&.id) }
-    end
-
-    def description_exists?(description, descriptive)
-      descriptive&.description_id.eql?(description.presence&.id)
     end
   end
 end
