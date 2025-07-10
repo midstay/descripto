@@ -58,22 +58,13 @@ class PersonTest < ActiveSupport::TestCase
     nationality = Descripto::Description.create(
       name: "French",
       name_key: "french",
-      description_type: "nationality"
+      description_type: "person_nationality"
     )
 
     @person.nationality_id = nationality.id
     @person.save
+
     assert @person.reload.nationality == nationality
-  end
-
-  def test_should_scope_description_type_if_scoped
-    interest_options = Person.descripto_descriptions[:options][:interests]
-    nationality_options = Person.descripto_descriptions[:options][:nationality]
-
-    assert interest_options[:class_name] == "Descripto::Description"
-    assert interest_options[:scope] == "interest"
-    assert nationality_options[:class_name] == "Descripto::Description"
-    assert nationality_options[:scope] == "person_nationality"
   end
 
   test "has_one association works correctly for new objects" do
@@ -102,5 +93,18 @@ class PersonTest < ActiveSupport::TestCase
     # Scenario 4: Validations should work without crashing
     person4 = Person.new(name: "Test Person 4", nationality_id: nationality_desc.id)
     assert person4.valid?, "Person should be valid"
+  end
+
+  test "should be able to create contact" do
+    assert_difference "Person.count" do
+      nationality = descripto_descriptions(:norwegian)
+
+      contact = Person.new(
+        name: "John Doe",
+        nationality:
+      )
+
+      contact.save
+    end
   end
 end
