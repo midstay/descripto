@@ -19,7 +19,7 @@ module Descripto
         # Super cannot be called directly inside a method definition
         super_getter = instance_method(type.to_sym)
         define_method(type) do
-          super_getter.bind_call(self).presence || cached_description_for(type, scoped_type)
+          super_getter.bind_call(self).presence || description_for(scoped_type)
         end
 
         define_method("#{type}_id") do
@@ -27,7 +27,7 @@ module Descripto
         end
       end
 
-      def define_description_setters_for(type) # rubocop:disable Metrics/MethodLength
+      def define_description_setters_for(type)
         define_method("#{type}=") do |description|
           current_description = send(type)
           return if current_description == description
@@ -38,9 +38,9 @@ module Descripto
           # Create new association if description present
           descriptives.build(description: description) if description.present?
 
-          # Reset caches so validations see correct state
+          # Reset getter cache so it sees the new state
+          # Don't reset descriptives association as it would clear the built object
           association(type.to_sym).reset
-          association(:descriptives).reset
         end
 
         define_method("#{type}_id=") do |id|
@@ -68,8 +68,18 @@ module Descripto
     end
 
     # Loads the description that was set in the custom setter
-    def cached_description_for(type, scoped_type)
-      Description.where(description_type: type, id: descriptions.map(&:id)).first
+    def description_for(scoped_type)
+      # First check in-memory built descriptive associations (fast cache lookup)
+      # This handles the case where associations are built but not yet saved
+      cached_description_for(scoped_type) ||
+        # If not found in memory, fall back to persisted descriptions (slower DB query)
+        Description.where(description_type: scoped_type, id: descriptions.map(&:id)).first
+    end
+
+    def cached_description_for(scoped_type)
+      descriptives.find do |descriptive|
+        descriptive.description&.description_type == scoped_type
+      end&.description
     end
   end
 end
