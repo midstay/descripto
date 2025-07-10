@@ -36,7 +36,7 @@ module Descripto
           descriptives.where(description: current_description).destroy_all if current_description
 
           # Create new association if description present
-          descriptives.create!(description: description) if description.present?
+          descriptives.build(description: description) if description.present?
 
           # Reset caches so validations see correct state
           association(type.to_sym).reset
