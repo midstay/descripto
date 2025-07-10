@@ -15,7 +15,7 @@ end
 # Task to run dummy app tests separately
 desc "Run tests in the dummy Rails app"
 task :test_dummy do
-  sh "cd test/dummy && RAILS_ENV=test bin/rails test"
+  sh "cd test/dummy && BUNDLE_GEMFILE=Gemfile bundle exec rails test"
 end
 
 # Default test task runs both
