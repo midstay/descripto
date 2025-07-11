@@ -19,7 +19,7 @@ module Descripto
         # Super cannot be called directly inside a method definition
         super_getter = instance_method(type.to_sym)
         define_method(type) do
-          super_getter.bind_call(self).presence || cached_description_for(type, scoped_type)
+          super_getter.bind_call(self).presence || description_for(scoped_type)
         end
 
         define_method("#{type}_id") do
@@ -31,11 +31,16 @@ module Descripto
       # unsets them if there are multiple being set in the same transaction.
       def define_description_setters_for(type)
         define_method("#{type}=") do |description|
-          descriptive = descriptive_of_type(type)
-          return if description_exists?(description, descriptive)
+          current_description = send(type)
+          return if current_description == description
 
-          descriptive&.destroy
-          descriptions << description if description.present?
+          descriptives.where(description: current_description).destroy_all if current_description
+
+          descriptives.build(description: description) if description.present?
+
+          # Reset getter cache so it sees the new state
+          # Don't reset descriptives association as it would clear the built object
+          association(type.to_sym).reset
         end
 
         define_method("#{type}_id=") do |id|
@@ -56,23 +61,25 @@ module Descripto
         return unless options[:limits]
 
         validates type, length: {
-          too_short: "must have at least %{count} #{type}(s)",
-          too_long: "must have at most %{count} #{type}(s)"
+          too_short: "must have at least %<count>s #{type}(s)",
+          too_long: "must have at most %<count>s #{type}(s)"
         }.merge(options[:limits])
       end
     end
 
     # Loads the description that was set in the custom setter
-    def cached_description_for(type, scoped_type)
-      Description.where(description_type: type, id: descriptions.map(&:id)).first
+    def description_for(scoped_type)
+      # First check in-memory built descriptive associations (fast cache lookup)
+      # This handles the case where associations are built but not yet saved
+      cached_description_for(scoped_type) ||
+        # If not found in memory, fall back to persisted descriptions (slower DB query)
+        Description.where(description_type: scoped_type, id: descriptions.map(&:id)).first
     end
 
-    def descriptive_of_type(type)
-      descriptives.find { |d| d.description_id.eql?(send(type)&.id) }
-    end
-
-    def description_exists?(description, descriptive)
-      descriptive&.description_id.eql?(description.presence&.id)
+    def cached_description_for(scoped_type)
+      descriptives.find do |descriptive|
+        descriptive.description&.description_type == scoped_type
+      end&.description
     end
   end
 end

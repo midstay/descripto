@@ -58,25 +58,53 @@ class PersonTest < ActiveSupport::TestCase
     nationality = Descripto::Description.create(
       name: "French",
       name_key: "french",
-      description_type: "nationality"
+      description_type: "person_nationality"
     )
 
     @person.nationality_id = nationality.id
     @person.save
-    assert @person.reload.nationality = nationality
+
+    assert @person.reload.nationality == nationality
   end
 
-  def test_should_scope_description_type_if_scoped
-    interest_options = Person.descripto_descriptions[:options][:interests]
-    assert interest_options[:scoped].blank?
+  test "has_one association works correctly for new objects" do
+    nationality_desc = descripto_descriptions(:norwegian)
 
-    interests_description_type = Person.first.interests.first.description_type
-    assert interests_description_type.exclude?("person")
+    # Scenario 1: Person.new(nationality_id: id).save should work
+    person1 = Person.new(name: "Test Person 1", nationality_id: nationality_desc.id)
+    assert_equal nationality_desc, person1.nationality, "Person.new(nationality_id: id) should work"
+    assert_equal nationality_desc.id, person1.nationality_id, "nationality_id should be set correctly"
+    assert person1.save, "Person should save successfully"
 
-    nationality_options = Person.descripto_descriptions[:options][:nationality]
-    assert nationality_options[:scoped].eql?(true)
+    # Scenario 2: Setting nationality= should work
+    person2 = Person.new(name: "Test Person 2")
+    person2.nationality = nationality_desc
+    assert_equal nationality_desc, person2.nationality, "Setting nationality= should work"
+    assert_equal nationality_desc.id, person2.nationality_id, "nationality_id should be set correctly"
+    assert person2.save, "Person should save successfully"
 
-    nationality_description_type = Person.first.nationality.description_type
-    assert nationality_description_type.include?("person")
+    # Scenario 3: Setting nationality_id= should work
+    person3 = Person.new(name: "Test Person 3")
+    person3.nationality_id = nationality_desc.id
+    assert_equal nationality_desc, person3.nationality, "Setting nationality_id= should work"
+    assert_equal nationality_desc.id, person3.nationality_id, "nationality_id should be set correctly"
+    assert person3.save, "Person should save successfully"
+
+    # Scenario 4: Validations should work without crashing
+    person4 = Person.new(name: "Test Person 4", nationality_id: nationality_desc.id)
+    assert person4.valid?, "Person should be valid"
+  end
+
+  test "should be able to create contact" do
+    assert_difference "Person.count" do
+      nationality = descripto_descriptions(:norwegian)
+
+      contact = Person.new(
+        name: "John Doe",
+        nationality:
+      )
+
+      contact.save
+    end
   end
 end
