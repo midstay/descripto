@@ -27,15 +27,15 @@ module Descripto
         end
       end
 
+      # The has_one "type setter" must be overridden as the has_one "description" setter
+      # unsets them if there are multiple being set in the same transaction.
       def define_description_setters_for(type)
         define_method("#{type}=") do |description|
           current_description = send(type)
           return if current_description == description
 
-          # Remove existing association for this type
           descriptives.where(description: current_description).destroy_all if current_description
 
-          # Create new association if description present
           descriptives.build(description: description) if description.present?
 
           # Reset getter cache so it sees the new state
