@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_02_19_063638) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_18_065649) do
+  create_table "contacts", force: :cascade do |t|
+    t.string "email"
+    t.string "contactable_type", null: false
+    t.integer "contactable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contactable_type", "contactable_id"], name: "index_contacts_on_contactable"
+  end
+
   create_table "descripto_descriptions", force: :cascade do |t|
     t.string "name"
     t.string "name_key"
@@ -29,11 +38,20 @@ ActiveRecord::Schema[7.2].define(version: 2025_02_19_063638) do
     t.index ["description_id"], name: "index_descripto_descriptives_on_description_id"
   end
 
-  create_table "people", force: :cascade do |t|
+  create_table "organizations", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  create_table "people", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "organization_id", null: false
+    t.index ["organization_id"], name: "index_people_on_organization_id"
+  end
+
   add_foreign_key "descripto_descriptives", "descripto_descriptions", column: "description_id"
+  add_foreign_key "people", "organizations"
 end

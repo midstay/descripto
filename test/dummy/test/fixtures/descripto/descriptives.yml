@@ -4,3 +4,6 @@ jan_tore_football:
 jan_tore_norwegian:
   description: norwegian
   describable: jan_tore (Person)
+jan_tore_ceo:
+  description: ceo
+  describable: jan_tore (Contact)
