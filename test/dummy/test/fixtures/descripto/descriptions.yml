@@ -10,3 +10,15 @@ norwegian:
   name: 'Norwegian'
   name_key: 'norwegian'
   description_type: 'person_nationality'
+indonesian:
+  name: 'Indonesian'
+  name_key: 'indonesian'
+  description_type: 'person_nationality'
+ceo:
+  name: 'CEO'
+  name_key: 'ceo'
+  description_type: 'job_position'
+cto:
+  name: 'CTO'
+  name_key: 'cto'
+  description_type: 'job_position'

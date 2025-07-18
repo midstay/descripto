@@ -36,7 +36,7 @@ module Descripto
 
           descriptives.where(description: current_description).destroy_all if current_description
 
-          descriptives.build(description: description) if description.present?
+          descriptions << description if description.present?
 
           # Reset getter cache so it sees the new state
           # Don't reset descriptives association as it would clear the built object

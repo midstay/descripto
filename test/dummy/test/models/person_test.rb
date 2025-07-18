@@ -2,7 +2,7 @@ require_relative "../test_helper"
 
 class PersonTest < ActiveSupport::TestCase
   setup do
-    @person = people(:jan_tore)
+    @person = persons(:jan_tore)
   end
 
   def test_adds_description_with_concern_inclusion
@@ -71,40 +71,67 @@ class PersonTest < ActiveSupport::TestCase
     nationality_desc = descripto_descriptions(:norwegian)
 
     # Scenario 1: Person.new(nationality_id: id).save should work
-    person1 = Person.new(name: "Test Person 1", nationality_id: nationality_desc.id)
+    person1 = Person.new(
+      name: "Test Person 1",
+      nationality_id: nationality_desc.id,
+      organization: organizations(:midstay)
+    )
     assert_equal nationality_desc, person1.nationality, "Person.new(nationality_id: id) should work"
     assert_equal nationality_desc.id, person1.nationality_id, "nationality_id should be set correctly"
     assert person1.save, "Person should save successfully"
 
     # Scenario 2: Setting nationality= should work
-    person2 = Person.new(name: "Test Person 2")
+    person2 = Person.new(
+      name: "Test Person 2",
+      organization: organizations(:midstay)
+    )
     person2.nationality = nationality_desc
     assert_equal nationality_desc, person2.nationality, "Setting nationality= should work"
     assert_equal nationality_desc.id, person2.nationality_id, "nationality_id should be set correctly"
     assert person2.save, "Person should save successfully"
 
     # Scenario 3: Setting nationality_id= should work
-    person3 = Person.new(name: "Test Person 3")
+    person3 = Person.new(
+      name: "Test Person 3",
+      organization: organizations(:midstay)
+    )
     person3.nationality_id = nationality_desc.id
     assert_equal nationality_desc, person3.nationality, "Setting nationality_id= should work"
     assert_equal nationality_desc.id, person3.nationality_id, "nationality_id should be set correctly"
     assert person3.save, "Person should save successfully"
 
     # Scenario 4: Validations should work without crashing
-    person4 = Person.new(name: "Test Person 4", nationality_id: nationality_desc.id)
+    person4 = Person.new(
+      name: "Test Person 4",
+      nationality_id: nationality_desc.id,
+      organization: organizations(:midstay)
+    )
     assert person4.valid?, "Person should be valid"
   end
 
-  test "should be able to create contact" do
+  test "should be able to create person" do
     assert_difference "Person.count" do
       nationality = descripto_descriptions(:norwegian)
 
-      contact = Person.new(
+      person = Person.new(
         name: "John Doe",
+        organization: organizations(:midstay),
         nationality:
       )
 
-      contact.save
+      person.save
     end
+  end
+
+  test "update person with contact" do
+    person = persons(:jan_tore)
+    contact = person.contact
+    job_position = descripto_descriptions(:cto)
+
+    person.update(contact_attributes: {
+                    job_position_id: job_position.id
+                  })
+
+    assert_equal job_position, contact.job_position
   end
 end
