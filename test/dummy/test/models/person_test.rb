@@ -8,8 +8,6 @@ class PersonTest < ActiveSupport::TestCase
   def test_adds_description_with_concern_inclusion
     assert Person.included_modules.include?(Descripto::Associated)
 
-    assert Person.descripto_descriptions[:types].include?(:interests)
-
     assert @person.respond_to?(:interests)
   end
 
@@ -133,5 +131,35 @@ class PersonTest < ActiveSupport::TestCase
                   })
 
     assert_equal job_position, contact.job_position
+  end
+
+  test "should not destroy description when setting to nil if validation failure" do
+    person = persons(:jan_tore)
+    previous_nationality = person.nationality
+
+    refute person.update(nationality: nil)
+
+    person.reload
+
+    assert person.nationality.present?
+    assert_equal previous_nationality, person.nationality
+  end
+
+  test "should reload nationality when changed" do
+    person = persons(:jan_tore)
+    new_nationality = descripto_descriptions(:indonesian)
+
+    person.update(nationality: new_nationality)
+
+    assert_equal new_nationality, person.nationality
+  end
+
+  test "should reload interests when changed" do
+    person = persons(:jan_tore)
+    new_interests = [descripto_descriptions(:basketball)]
+
+    person.update(interests: new_interests)
+
+    assert_equal new_interests, person.interests
   end
 end

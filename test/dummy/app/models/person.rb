@@ -11,6 +11,7 @@ class Person < ApplicationRecord
                  nationality: { scoped: true }
                }
 
+  validates :nationality, presence: true
   validate :nationality_must_be_scoped
 
   has_one :contact, as: :contactable
@@ -18,6 +19,7 @@ class Person < ApplicationRecord
   accepts_nested_attributes_for :contact, update_only: true
 
   def nationality_must_be_scoped
+    return if nationality.blank?
     return if nationality.description_type == "person_nationality"
 
     errors.add(:nationality,

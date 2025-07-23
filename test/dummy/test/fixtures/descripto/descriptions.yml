@@ -6,6 +6,10 @@ programming:
   name: 'Programming'
   name_key: 'programming'
   description_type: 'interest'
+basketball:
+  name: 'Basketball'
+  name_key: 'basketball'
+  description_type: 'interest'
 norwegian:
   name: 'Norwegian'
   name_key: 'norwegian'
