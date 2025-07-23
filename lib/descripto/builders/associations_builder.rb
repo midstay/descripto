@@ -2,7 +2,7 @@ require_relative "base_builder"
 
 module Descripto
   module Builders
-    class AssociationBuilder < BaseBuilder
+    class AssociationsBuilder < BaseBuilder
       def run
         define_descriptive_association
         define_description_association

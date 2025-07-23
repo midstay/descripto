@@ -1,5 +1,5 @@
 require "active_support/concern"
-require_relative "builders/association_builder"
+require_relative "builders/associations_builder"
 require_relative "builders/methods_builder"
 require_relative "builders/validations_builder"
 
@@ -18,7 +18,7 @@ module Descripto
         self.descripto_descriptions = { types:, options: }.with_indifferent_access
 
         types.each do |type|
-          %w[Association Methods Validations].each do |builder|
+          %w[Associations Methods Validations].each do |builder|
             builder_class = "Descripto::Builders::#{builder}Builder"
             builder_class.constantize.build(self, type)
           end
