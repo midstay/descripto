@@ -27,7 +27,7 @@ module Descripto
       end
 
       def options
-        @options ||= model.descripto_descriptions[:options][type]
+        @options ||= model.descripto_descriptions[:options][type] || {}
       end
     end
   end
