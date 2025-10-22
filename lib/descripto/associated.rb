@@ -30,7 +30,7 @@ module Descripto
 
         return type.to_s.singularize unless options&.dig(:scoped)
 
-        "#{name.parameterize.underscore}_#{type.to_s.singularize}"
+        "#{model_name.singular}_#{type.to_s.singularize}"
       end
     end
   end
